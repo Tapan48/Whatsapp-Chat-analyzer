@@ -4,3 +4,5 @@
 !stop_hinglish.txt
 **/*.ipynb
 **/.ipynb_checkpoints/
+.ipynb_checkpoints
+*.ipynb
