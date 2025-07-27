@@ -242,4 +242,39 @@ if uploaded_file is not None:
         ax=sns.heatmap(user_heatmap)
         st.pyplot(fig)
         
+        # Emoji Analysis Section
+        st.title("Emoji Analysis")
+        emoji_df, emoji_stats = helper.emoji_analysis(df, user)
+        
+        if not emoji_df.empty:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.header("Emoji Usage Statistics")
+                st.metric("Total Messages", emoji_stats["total_messages"])
+                st.metric("Messages with Emojis", emoji_stats["messages_with_emojis"])
+                st.metric("Emoji Usage Rate", f"{emoji_stats['emoji_usage_rate']:.1f}%")
+                st.metric("Total Emojis Used", emoji_stats["total_emojis"])
+                st.metric("Unique Emojis", emoji_stats["unique_emojis"])
+            
+            with col2:
+                st.header("Top 10 Most Used Emojis")
+                if len(emoji_df) > 0:
+                    fig, ax = plt.subplots(figsize=(10, 6))
+                    top_10 = emoji_df.head(10)
+                    ax.bar(range(len(top_10)), top_10["Count"])
+                    ax.set_xticks(range(len(top_10)))
+                    ax.set_xticklabels(top_10["Emoji"], fontsize=12)
+                    ax.set_ylabel("Count")
+                    ax.set_title("Top 10 Emojis")
+                    plt.tight_layout()
+                    st.pyplot(fig)
+                else:
+                    st.write("No emojis found")
+            
+            st.header("Complete Emoji List")
+            st.dataframe(emoji_df)
+        else:
+            st.write("No emojis found in messages")
+        
         

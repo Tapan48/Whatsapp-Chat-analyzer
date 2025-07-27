@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 import setuptools
 import pandas as pd
+import emoji 
 extractor = URLExtract()
 
 def fetch_stats(user,df):
@@ -202,6 +203,54 @@ def activity_heatmap(selected_user,df):
     user_heatmap = df.pivot_table(index='day_name', columns='period', values='Message', aggfunc='count').fillna(0)
 
     return user_heatmap    
+     
+            
+            
+            
+def emoji_analysis(df, user):
+    """Analyze emoji usage patterns in messages"""
+    
+    # Filter for specific user or overall
+    if user != "Overall":
+        df = df[df["User"] == user]
+    
+    emoji_counts = {}
+    total_messages = 0
+    messages_with_emojis = 0
+    
+    # Go through each message
+    for message in df["Message"]:
+        if message != "<Media omitted>":
+            total_messages += 1
+            # Find all emojis in the message
+            emojis = emoji.emoji_list(message)
+            
+            if emojis:  # If message contains emojis
+                messages_with_emojis += 1
+                
+            # Count each emoji
+            for e in emojis:
+                emoji_char = e["emoji"]
+                emoji_counts[emoji_char] = emoji_counts.get(emoji_char, 0) + 1
+    
+    # Convert to DataFrame for easy display
+    if emoji_counts:
+        emoji_df = pd.DataFrame(list(emoji_counts.items()), 
+                               columns=["Emoji", "Count"])
+        emoji_df = emoji_df.sort_values("Count", ascending=False)
+    else:
+        emoji_df = pd.DataFrame(columns=["Emoji", "Count"])
+    
+    # Calculate emoji usage statistics
+    emoji_stats = {
+        "total_messages": total_messages,
+        "messages_with_emojis": messages_with_emojis,
+        "emoji_usage_rate": (messages_with_emojis / total_messages * 100) if total_messages > 0 else 0,
+        "total_emojis": sum(emoji_counts.values()),
+        "unique_emojis": len(emoji_counts)
+    }
+    
+    return emoji_df, emoji_stats    
      
             
             
