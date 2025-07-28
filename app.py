@@ -239,6 +239,25 @@ if uploaded_file is not None:
         )
         
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Add monthly summary statistics
+        st.subheader("📊 Monthly Activity Summary")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Total Months", len(monthly_msges))
+        with col2:
+            st.metric("Average Messages/Month", f"{monthly_msges['Message'].mean():.1f}")
+        with col3:
+            st.metric("Peak Month Messages", monthly_msges["Message"].max())
+        with col4:
+            st.metric("Peak Month", monthly_msges["month-year"][peak_idx])
+        
+        # Show most busy months in a table
+        st.subheader("🏆 Top 5 Busiest Months")
+        top_months = monthly_msges.nlargest(5, 'Message')[['month-year', 'Message']]
+        top_months.columns = ['Month-Year', 'Messages']
+        st.dataframe(top_months, use_container_width=True)
 
         st.title("Daily-Timeline")
         daily_msges = helper.daily_timeline(user, df)
@@ -308,39 +327,6 @@ if uploaded_file is not None:
         top_days.columns = ['Date', 'Messages']
         st.dataframe(top_days, use_container_width=True)
         
-        
-        st.title("Activity Map")
-        col1, col2= st.columns(2)
-        
-        
-        with col1:
-            st.header("Most busy day")
-            
-            busyday=helper.weekly_activity(user,df)
-        
-            
-            fig, ax = plt.subplots()
-            ax.bar(busyday.index, busyday.values)
-            plt.xticks(rotation= 'vertical')
-            plt.figure(figsize=(100,60))
-            st.pyplot(fig)
-
-        
-        with col2:
-            st.header("Most busy Month")
-            
-            busymonth=helper.monthly_activity(user,df)
-            fig, ax = plt.subplots()
-            ax.bar(busymonth.index, busymonth.values,color="orange")
-            plt.xticks(rotation= 'vertical')
-            plt.figure(figsize=(100,60))
-            st.pyplot(fig)
-            
-        st.title("Weekly Activity Map")    
-        user_heatmap=helper.activity_heatmap(user,df)   
-        fig, ax = plt.subplots()
-        ax=sns.heatmap(user_heatmap)
-        st.pyplot(fig)
         
         # Emoji Analysis Section
         st.title("Emoji Analysis")
