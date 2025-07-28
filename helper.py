@@ -52,13 +52,20 @@ def most_busy_users(df):
     
     df1=df["User"].value_counts().head()
     
-    newdf=round((df["User"].value_counts()/df.shape[0])*100,2).reset_index()
-    # Fix the column renaming - reset_index() creates 'index' column, and we need to rename it to 'User'
-    # The value_counts() creates a Series with User as index, so reset_index() creates 'index' column
-    newdf=newdf.rename(columns={"index":"User"})
-    newdf=newdf.rename(columns={"User":"percent(%)"})
+    # Calculate participation percentages for all users
+    participation_df = round((df["User"].value_counts()/df.shape[0])*100,2).reset_index()
     
-    return df1,newdf   #### df1 contains data of top 5 users and their  messages_count,  newdf consists of users and their percentage of messages        
+    # Debug: print the actual column names
+    print("Original columns:", participation_df.columns.tolist())
+    print("DataFrame head:", participation_df.head())
+    
+    # After reset_index(), the columns are 'User' (user names) and 'count' (percentages)
+    # We need to rename 'count' to 'Participation %'
+    participation_df = participation_df.rename(columns={"count":"Participation %"})
+    
+    print("After renaming columns:", participation_df.columns.tolist())
+    
+    return df1, participation_df   #### df1 contains data of top 5 users and their  messages_count,  participation_df consists of users and their percentage of messages
     
 def word_cloud(user,df):
     f=open("stop_hinglish.txt","r")

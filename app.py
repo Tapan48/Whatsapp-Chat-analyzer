@@ -180,13 +180,21 @@ if uploaded_file is not None:
             
             with col2:
                 st.subheader("Participation % of all members", divider=False)
+                
+                # Clean the data to avoid warnings but preserve all data
+                df2_clean = df2.copy()
+                # Convert to numeric but keep original if conversion fails
+                df2_clean['Participation %'] = pd.to_numeric(df2_clean['Participation %'], errors='coerce')
+                # Only remove rows that are completely NaN, not just missing percent
+                df2_clean = df2_clean.dropna(subset=['User'])  # Use 'User' column which contains user names
+                
                 st.dataframe(
-                    df2,
+                    df2_clean,
                     use_container_width=True,
                     hide_index=True,
                     column_config={
-                        "User": "Username",
-                        "percent(%)": st.column_config.NumberColumn(
+                        "User": st.column_config.TextColumn("Username"),
+                        "Participation %": st.column_config.NumberColumn(
                             "Participation %",
                             help="Percentage of total messages",
                             format="%.2f%%"
@@ -204,17 +212,21 @@ if uploaded_file is not None:
             # Create a DataFrame for this user's participation
             user_participation_data = pd.DataFrame({
                 'User': [user],
-                'percent(%)': [user_percentage]
+                'Participation %': [user_percentage]
             })
             
             st.subheader("Participation in Group Chat", divider=False)
+            # Clean the data to avoid warnings
+            user_participation_clean = user_participation_data.copy()
+            user_participation_clean['Participation %'] = pd.to_numeric(user_participation_clean['Participation %'], errors='coerce')
+            
             st.dataframe(
-                user_participation_data,
+                user_participation_clean,
                 use_container_width=True,
                 hide_index=True,
                 column_config={
-                    "User": "Username",
-                    "percent(%)": st.column_config.NumberColumn(
+                    "User": st.column_config.TextColumn("Username"),
+                    "Participation %": st.column_config.NumberColumn(
                         "Participation %",
                         help="Percentage of total messages",
                         format="%.2f%%"
