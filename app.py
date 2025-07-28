@@ -181,14 +181,65 @@ if uploaded_file is not None:
         st.pyplot(fig)
         
         st.title("Top 20 most used words")
-        top_20_words=helper.top_20_most_words(df,user)
-        fig, ax = plt.subplots()
-
-
-
-        ax.barh(top_20_words[0], top_20_words[1])
-        plt.xticks(rotation= 'vertical')
-        st.pyplot(fig)
+        top_20_words = helper.top_20_most_words(df, user)
+        
+        # Create a better visualization with Plotly
+        fig = go.Figure()
+        
+        # Add horizontal bar chart with better styling
+        fig.add_trace(go.Bar(
+            y=top_20_words[0],  # Words
+            x=top_20_words[1],  # Counts
+            orientation='h',
+            marker=dict(
+                color=top_20_words[1],  # Color by count
+                colorscale='Viridis',
+                showscale=True,
+                colorbar=dict(title="Count")
+            ),
+            hovertemplate='<b>%{y}</b><br>' +
+                         'Count: %{x}<br>' +
+                         '<extra></extra>'
+        ))
+        
+        fig.update_layout(
+            title="Top 20 Most Used Words",
+            xaxis_title="Word Count",
+            yaxis_title="Words",
+            height=600,  # Taller for better readability
+            showlegend=False,
+            yaxis=dict(
+                autorange="reversed",  # Show most used at top
+                tickfont=dict(size=12)
+            ),
+            xaxis=dict(
+                tickfont=dict(size=10)
+            )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Add summary statistics
+        st.subheader("📊 Word Usage Summary")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Most Used Word", top_20_words[0].iloc[0])
+        with col2:
+            st.metric("Most Used Count", top_20_words[1].iloc[0])
+        with col3:
+            st.metric("Average Word Count", f"{top_20_words[1].mean():.1f}")
+        with col4:
+            st.metric("Total Unique Words", len(top_20_words[0]))
+        
+        # Show top 20 words in a clean table
+        st.subheader("📋 Complete Top 20 Words List")
+        words_df = pd.DataFrame({
+            'Rank': range(1, 21),
+            'Word': top_20_words[0],
+            'Count': top_20_words[1]
+        })
+        st.dataframe(words_df, use_container_width=True)
         
         
         st.title("Monthly-Timeline")
