@@ -16,6 +16,7 @@ import emoji
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from collections import Counter
 
 # Configure matplotlib for better emoji support
 plt.rcParams['font.family'] = ['DejaVu Sans', 'Arial Unicode MS', 'AppleGothic', 'sans-serif']
@@ -176,9 +177,81 @@ if uploaded_file is not None:
                 
         st.title("Word Cloud")
         df_wc = helper.word_cloud(user, df)
-        fig,ax=plt.subplots()
-        ax.imshow(df_wc)
+        
+        # Create a better word cloud visualization
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.imshow(df_wc, interpolation='bilinear')
+        ax.axis('off')  # Remove axes for cleaner look
+        
+        # Add title and styling
+        plt.tight_layout(pad=0)
+        
+        # Display the word cloud
         st.pyplot(fig)
+        
+        # Add word cloud insights and statistics
+        st.subheader("📊 Word Cloud Insights")
+        
+        # Get word frequency data for insights
+        temp = df[df["User"] != "group notification"]
+        final_df = temp[temp["Message"] != "<Media omitted>"]
+        
+        if user != "Overall":
+            final_df = final_df[final_df["User"] == user]
+        
+        # Count words for insights
+        words = []
+        for message in final_df["Message"]:
+            words.extend(message.lower().split())
+        
+        word_counts = Counter(words)
+        total_words = len(words)
+        unique_words = len(word_counts)
+        
+        # Display insights in columns
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Total Words", f"{total_words:,}")
+        with col2:
+            st.metric("Unique Words", f"{unique_words:,}")
+        with col3:
+            st.metric("Most Frequent Word", word_counts.most_common(1)[0][0] if word_counts else "N/A")
+        with col4:
+            st.metric("Most Frequent Count", word_counts.most_common(1)[0][1] if word_counts else 0)
+        
+        # Add word cloud features explanation
+        st.subheader("🎨 Word Cloud Features")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            **📏 Size**: Larger words = More frequent usage
+            **🎨 Colors**: Different colors for visual appeal
+            **📝 Content**: Excludes common stop words
+            **👥 Scope**: Shows words for selected user/overall
+            """)
+        
+        with col2:
+            st.markdown("""
+            **🔍 Interactive**: Hover for better visibility
+            **📊 Frequency**: Word size indicates usage frequency
+            **🎯 Focus**: Highlights most important words
+            **📈 Insights**: Visual representation of chat patterns
+            """)
+        
+        # Show top words in a compact format
+        if word_counts:
+            st.subheader("🏆 Top 10 Most Frequent Words")
+            top_words = word_counts.most_common(10)
+            
+            # Create a nice display
+            cols = st.columns(5)
+            for idx, (word, count) in enumerate(top_words):
+                col_idx = idx % 5
+                with cols[col_idx]:
+                    st.markdown(f"**{word}**")
+                    st.markdown(f"*{count} times*")
         
         st.title("Top 20 most used words")
         top_20_words = helper.top_20_most_words(df, user)
