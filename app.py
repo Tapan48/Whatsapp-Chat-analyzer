@@ -286,8 +286,7 @@ if uploaded_file is not None:
             tab1, tab2, tab3 = st.tabs(["📊 Table View", "🎯 Grid View", "📝 Text List"])
             
             with tab1:
-                st.dataframe(emoji_df, use_container_width=True)
-            
+                st.dataframe(emoji_df.reset_index(drop=True).assign(index=lambda x: x.index + 1).set_index('index'), use_container_width=True)
             with tab2:
                 # Grid display with simple format
                 cols = st.columns(4)
