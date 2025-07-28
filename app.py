@@ -13,6 +13,9 @@ import os
 import uuid
 from dotenv import load_dotenv
 import emoji
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Configure matplotlib for better emoji support
 plt.rcParams['font.family'] = ['DejaVu Sans', 'Arial Unicode MS', 'AppleGothic', 'sans-serif']
@@ -190,33 +193,98 @@ if uploaded_file is not None:
         
         st.title("Monthly-Timeline")
         monthly_msges = helper.monthly_timeline(df, user)
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(monthly_msges["month-year"], monthly_msges["Message"], marker='o', color='#1f77b4', linewidth=2)
-        ax.set_xlabel("Month-Year", fontsize=12)
-        ax.set_ylabel("Messages", fontsize=12)
-        ax.set_title("Monthly Message Timeline", fontsize=14, fontweight='bold')
-        ax.grid(True, linestyle='--', alpha=0.5)
-        plt.xticks(rotation=45, ha='right')
+        
+        # Create interactive Plotly chart for monthly timeline
+        fig = go.Figure()
+        
+        # Add line plot with all data points
+        fig.add_trace(go.Scatter(
+            x=monthly_msges["month-year"],
+            y=monthly_msges["Message"],
+            mode='lines+markers',
+            name='Messages',
+            line=dict(color='#1f77b4', width=3),
+            marker=dict(size=8, color='#1f77b4'),
+            hovertemplate='<b>%{x}</b><br>' +
+                         'Messages: %{y}<br>' +
+                         '<extra></extra>'
+        ))
+        
         # Highlight peak month
         peak_idx = monthly_msges["Message"].idxmax()
-        ax.plot(monthly_msges["month-year"][peak_idx], monthly_msges["Message"][peak_idx], 'ro', markersize=10, label='Peak')
-        ax.legend()
-        st.pyplot(fig)
+        fig.add_trace(go.Scatter(
+            x=[monthly_msges["month-year"][peak_idx]],
+            y=[monthly_msges["Message"][peak_idx]],
+            mode='markers',
+            name='Peak Month',
+            marker=dict(size=15, color='red', symbol='star'),
+            hovertemplate='<b>Peak Month: %{x}</b><br>' +
+                         'Messages: %{y}<br>' +
+                         '<extra></extra>'
+        ))
+        
+        fig.update_layout(
+            title="Monthly Message Timeline",
+            xaxis_title="Month-Year",
+            yaxis_title="Messages",
+            hovermode='closest',
+            showlegend=True,
+            height=500,
+            xaxis=dict(
+                tickangle=45,
+                tickmode='array',
+                ticktext=monthly_msges["month-year"],
+                tickvals=list(range(len(monthly_msges)))
+            )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
 
         st.title("Daily-Timeline")
         daily_msges = helper.daily_timeline(user, df)
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.bar(daily_msges["onlydate"], daily_msges["Message"], color='#ff7f0e', width=1)
-        ax.set_xlabel("Date", fontsize=12)
-        ax.set_ylabel("Messages", fontsize=12)
-        ax.set_title("Daily Message Timeline", fontsize=14, fontweight='bold')
-        ax.grid(True, linestyle='--', alpha=0.5)
-        plt.xticks(rotation=45, ha='right', fontsize=8)
+        
+        # Create interactive Plotly chart for daily timeline
+        fig = go.Figure()
+        
+        # Add bar chart with all data points
+        fig.add_trace(go.Bar(
+            x=daily_msges["onlydate"],
+            y=daily_msges["Message"],
+            name='Messages',
+            marker_color='#ff7f0e',
+            hovertemplate='<b>%{x}</b><br>' +
+                         'Messages: %{y}<br>' +
+                         '<extra></extra>'
+        ))
+        
         # Highlight peak day
         peak_idx = daily_msges["Message"].idxmax()
-        ax.bar(daily_msges["onlydate"][peak_idx], daily_msges["Message"][peak_idx], color='red', width=1, label='Peak')
-        ax.legend()
-        st.pyplot(fig)
+        fig.add_trace(go.Bar(
+            x=[daily_msges["onlydate"][peak_idx]],
+            y=[daily_msges["Message"][peak_idx]],
+            name='Peak Day',
+            marker_color='red',
+            hovertemplate='<b>Peak Day: %{x}</b><br>' +
+                         'Messages: %{y}<br>' +
+                         '<extra></extra>'
+        ))
+        
+        fig.update_layout(
+            title="Daily Message Timeline",
+            xaxis_title="Date",
+            yaxis_title="Messages",
+            hovermode='closest',
+            showlegend=True,
+            height=500,
+            xaxis=dict(
+                tickangle=45,
+                tickmode='array',
+                ticktext=daily_msges["onlydate"],
+                tickvals=list(range(len(daily_msges)))
+            )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
         
         
         st.title("Activity Map")
