@@ -12,6 +12,11 @@ from botocore.exceptions import NoCredentialsError
 import os
 import uuid
 from dotenv import load_dotenv
+import emoji
+
+# Configure matplotlib for better emoji support
+plt.rcParams['font.family'] = ['DejaVu Sans', 'Arial Unicode MS', 'AppleGothic', 'sans-serif']
+plt.rcParams['font.size'] = 12
 
 
 # load_dotenv()  # Load environment variables from the .env file
@@ -247,34 +252,78 @@ if uploaded_file is not None:
         emoji_df, emoji_stats = helper.emoji_analysis(df, user)
         
         if not emoji_df.empty:
-            col1, col2 = st.columns(2)
+            # Statistics in a nice grid layout
+            st.header("📊 Emoji Usage Statistics")
+            col1, col2, col3, col4, col5 = st.columns(5)
             
             with col1:
-                st.header("Emoji Usage Statistics")
                 st.metric("Total Messages", emoji_stats["total_messages"])
+            with col2:
                 st.metric("Messages with Emojis", emoji_stats["messages_with_emojis"])
+            with col3:
                 st.metric("Emoji Usage Rate", f"{emoji_stats['emoji_usage_rate']:.1f}%")
+            with col4:
                 st.metric("Total Emojis Used", emoji_stats["total_emojis"])
+            with col5:
                 st.metric("Unique Emojis", emoji_stats["unique_emojis"])
             
-            with col2:
-                st.header("Top 10 Most Used Emojis")
-                if len(emoji_df) > 0:
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    top_10 = emoji_df.head(10)
-                    ax.bar(range(len(top_10)), top_10["Count"])
-                    ax.set_xticks(range(len(top_10)))
-                    ax.set_xticklabels(top_10["Emoji"], fontsize=12)
-                    ax.set_ylabel("Count")
-                    ax.set_title("Top 10 Emojis")
-                    plt.tight_layout()
-                    st.pyplot(fig)
-                else:
-                    st.write("No emojis found")
+            # Top emojis display
+            st.header("🏆 Top Emojis Used")
+            if len(emoji_df) > 0:
+                # Show top 10 emojis in a simple format
+                top_10 = emoji_df.head(10)
+                cols = st.columns(5)
+                for idx, row in top_10.iterrows():
+                    col_idx = idx % 5
+                    with cols[col_idx]:
+                        st.write(f"**{row['Emoji']}**")
+                        st.write(f"**{row['Count']} times**")
             
-            st.header("Complete Emoji List")
-            st.dataframe(emoji_df)
+            # All emojis in a scrollable format
+            st.header("📋 Complete Emoji List")
+            
+            # Create tabs for different views
+            tab1, tab2, tab3 = st.tabs(["📊 Table View", "🎯 Grid View", "📝 Text List"])
+            
+            with tab1:
+                st.dataframe(emoji_df, use_container_width=True)
+            
+            with tab2:
+                # Grid display with simple format
+                cols = st.columns(4)
+                for idx, row in emoji_df.iterrows():
+                    col_idx = idx % 4
+                    with cols[col_idx]:
+                        st.write(f"**{row['Emoji']}**")
+                        st.write(f"{row['Count']} times")
+            
+            with tab3:
+                # Simple text list
+                emoji_text = ""
+                for idx, row in emoji_df.iterrows():
+                    emoji_text += f"{row['Emoji']} ({row['Count']})  "
+                    if (idx + 1) % 6 == 0:  # New line every 6 emojis
+                        emoji_text += "\n"
+                
+                st.text_area("All Emojis Used:", emoji_text, height=200)
+            
+            # Emoji insights - using simple Streamlit components
+            st.header("💡 Emoji Insights")
+            if len(emoji_df) > 0:
+                most_used = emoji_df.iloc[0]
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.subheader("🥇 Most Used Emoji")
+                    st.write(f"**{most_used['Emoji']}**")
+                    st.write(f"**{most_used['Count']} times**")
+                
+                with col2:
+                    st.subheader("📊 Emoji Diversity")
+                    st.write(f"**{emoji_stats['unique_emojis']}**")
+                    st.write("Unique emojis used")
         else:
-            st.write("No emojis found in messages")
+            st.warning("No emojis found in messages")
+            st.info("Try uploading a chat file that contains emoji messages.")
         
         
