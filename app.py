@@ -90,7 +90,7 @@ if uploaded_file is not None:
     string_data = bytes_data.decode('utf-8')
     
     df=preprocessor.preprocess(string_data)
-    # st.dataframe(df)
+    st.dataframe(df)
     
     users=df["User"].unique().tolist()
     
@@ -243,48 +243,70 @@ if uploaded_file is not None:
         st.title("Daily-Timeline")
         daily_msges = helper.daily_timeline(user, df)
         
-        # Create interactive Plotly chart for daily timeline
-        fig = go.Figure()
+        # Create better daily timeline alternatives
+        col1, col2 = st.columns(2)
         
-        # Add bar chart with all data points
-        fig.add_trace(go.Bar(
-            x=daily_msges["onlydate"],
-            y=daily_msges["Message"],
-            name='Messages',
-            marker_color='#ff7f0e',
-            hovertemplate='<b>%{x}</b><br>' +
-                         'Messages: %{y}<br>' +
-                         '<extra></extra>'
-        ))
-        
-        # Highlight peak day
-        peak_idx = daily_msges["Message"].idxmax()
-        fig.add_trace(go.Bar(
-            x=[daily_msges["onlydate"][peak_idx]],
-            y=[daily_msges["Message"][peak_idx]],
-            name='Peak Day',
-            marker_color='red',
-            hovertemplate='<b>Peak Day: %{x}</b><br>' +
-                         'Messages: %{y}<br>' +
-                         '<extra></extra>'
-        ))
-        
-        fig.update_layout(
-            title="Daily Message Timeline",
-            xaxis_title="Date",
-            yaxis_title="Messages",
-            hovermode='closest',
-            showlegend=True,
-            height=500,
-            xaxis=dict(
-                tickangle=45,
-                tickmode='array',
-                ticktext=daily_msges["onlydate"],
-                tickvals=list(range(len(daily_msges)))
+        with col1:
+            st.subheader("📅 Weekly Activity Pattern")
+            # Use existing weekly_activity function
+            weekly_pattern = helper.weekly_activity(user, df)
+            
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                x=weekly_pattern.index,
+                y=weekly_pattern.values,
+                marker_color='lightblue',
+                hovertemplate='<b>%{x}</b><br>Messages: %{y}<extra></extra>'
+            ))
+            
+            fig.update_layout(
+                title="Messages by Day of Week",
+                xaxis_title="Day of Week",
+                yaxis_title="Total Messages",
+                height=400
             )
-        )
+            st.plotly_chart(fig, use_container_width=True)
         
-        st.plotly_chart(fig, use_container_width=True)
+        with col2:
+            st.subheader("📊 Activity Distribution")
+            # Create activity level distribution
+            activity_levels = pd.cut(daily_msges['Message'], 
+                                   bins=[0, 10, 50, 100, float('inf')], 
+                                   labels=['Low (0-10)', 'Medium (11-50)', 'High (51-100)', 'Very High (100+)'])
+            activity_dist = activity_levels.value_counts()
+            
+            fig = go.Figure()
+            fig.add_trace(go.Pie(
+                labels=activity_dist.index,
+                values=activity_dist.values,
+                hole=0.4,
+                hovertemplate='<b>%{label}</b><br>Days: %{value}<extra></extra>'
+            ))
+            
+            fig.update_layout(
+                title="Activity Level Distribution",
+                height=400
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Add summary statistics
+        st.subheader("📈 Daily Activity Summary")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Total Active Days", len(daily_msges))
+        with col2:
+            st.metric("Average Messages/Day", f"{daily_msges['Message'].mean():.1f}")
+        with col3:
+            st.metric("Peak Day Messages", daily_msges['Message'].max())
+        with col4:
+            st.metric("Most Active Day", weekly_pattern.index[0] if len(weekly_pattern) > 0 else "N/A")
+        
+        # Show top 10 busiest days in a table
+        st.subheader("🏆 Top 10 Busiest Days")
+        top_days = daily_msges.nlargest(10, 'Message')[['onlydate', 'Message']]
+        top_days.columns = ['Date', 'Messages']
+        st.dataframe(top_days, use_container_width=True)
         
         
         st.title("Activity Map")
