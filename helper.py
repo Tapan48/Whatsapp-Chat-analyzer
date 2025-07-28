@@ -82,20 +82,19 @@ def word_cloud(user,df):
     
     if user=="Overall":
         
-        
-        
-        final_df["Message"]=final_df["Message"].apply(remove_stopwords)
+        final_df_copy = final_df.copy()
+        final_df_copy.loc[:, "Message"]=final_df_copy["Message"].apply(remove_stopwords)
 
         # Create a WordCloud object with the desired parameters
         wc = WordCloud(width=800, height=800,min_font_size=10, background_color='white')
-        df_wc =wc.generate(final_df['Message'].str.cat(sep=" "))
+        df_wc =wc.generate(final_df_copy['Message'].str.cat(sep=" "))
         
         
         
     
     else:
-        newdf=final_df[final_df["User"]==user]
-        newdf["Message"]=newdf["Message"].apply(remove_stopwords)
+        newdf=final_df[final_df["User"]==user].copy()
+        newdf.loc[:, "Message"]=newdf["Message"].apply(remove_stopwords)
    
         
 
@@ -147,18 +146,18 @@ def emojis_get():
 
 def monthly_timeline(df,user):
         
-
-        df['MonthNum'] = df['datetime'].dt.month
+        df_copy = df.copy()
+        df_copy['MonthNum'] = df_copy['datetime'].dt.month
 
         
     
         if user!="Overall":
             
-            df=df[df["User"]==user]
+            df_copy=df_copy[df_copy["User"]==user]
             
         
                 
-        timeline=df.groupby(["year","month","MonthNum"]).count()["Message"].reset_index()
+        timeline=df_copy.groupby(["year","month","MonthNum"]).count()["Message"].reset_index()
         time=[]
         for i in range(timeline.shape[0]):
 
@@ -170,40 +169,44 @@ def monthly_timeline(df,user):
     
 def daily_timeline(user,df):
     
+    df_copy = df.copy()
     if user!="Overall":
             
-            df=df[df["User"]==user]
+            df_copy=df_copy[df_copy["User"]==user]
             
-    df["onlydate"]=df["datetime"].dt.date
-    daily=df.groupby(["onlydate"]).count()["Message"].reset_index()
+    df_copy["onlydate"]=df_copy["datetime"].dt.date
+    daily=df_copy.groupby(["onlydate"]).count()["Message"].reset_index()
     return daily        
     
 def weekly_activity(user,df):
+    df_copy = df.copy()
     if user!="Overall":
             
-            df=df[df["User"]==user]
+            df_copy=df_copy[df_copy["User"]==user]
             
-    df["day_name"]=df["datetime"].dt.day_name()
+    df_copy["day_name"]=df_copy["datetime"].dt.day_name()
        
     
-    return df["day_name"].value_counts()                                 
+    return df_copy["day_name"].value_counts()                                 
     
 def monthly_activity(user,df): 
+    df_copy = df.copy()
     if user!="Overall":
             
-        df=df[df["User"]==user]
+        df_copy=df_copy[df_copy["User"]==user]
             
      
       
    
-    return df["month"].value_counts()                                    
+    return df_copy["month"].value_counts()                                    
        
 def activity_heatmap(selected_user,df):
     
+    df_copy = df.copy()
     if selected_user != 'Overall':
-        df = df[df['User'] == selected_user]
+        df_copy = df_copy[df_copy['User'] == selected_user]
 
-    user_heatmap = df.pivot_table(index='day_name', columns='period', values='Message', aggfunc='count').fillna(0)
+    user_heatmap = df_copy.pivot_table(index='day_name', columns='period', values='Message', aggfunc='count').fillna(0)
 
     return user_heatmap    
      

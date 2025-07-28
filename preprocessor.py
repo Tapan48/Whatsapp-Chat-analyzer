@@ -34,7 +34,7 @@ def preprocess(string_data):
     df=df.drop(columns={"User_Message"})
     df=df.rename(columns={"Date-Time":"datetime"})
     # remove rows with incorrect format
-    df = df[df['datetime'].str.match('\d{2}/\d{2}/\d{4}, \d{2}:\d{2}')]
+    df = df[df['datetime'].str.match(r'\d{2}/\d{2}/\d{4}, \d{2}:\d{2}')]
 
     # convert the datetime column to a datetime object
     df['datetime'] = pd.to_datetime(df['datetime'], format='%d/%m/%Y, %H:%M')
