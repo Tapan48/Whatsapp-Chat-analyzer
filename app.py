@@ -257,6 +257,9 @@ if uploaded_file is not None:
         st.subheader("🏆 Top 5 Busiest Months")
         top_months = monthly_msges.nlargest(5, 'Message')[['month-year', 'Message']]
         top_months.columns = ['Month-Year', 'Messages']
+        # Add proper indexing (1, 2, 3, etc.)
+        top_months = top_months.reset_index(drop=True)
+        top_months.index = top_months.index + 1
         st.dataframe(top_months, use_container_width=True)
 
         st.title("Daily-Timeline")
@@ -325,6 +328,9 @@ if uploaded_file is not None:
         st.subheader("🏆 Top 10 Busiest Days")
         top_days = daily_msges.nlargest(10, 'Message')[['onlydate', 'Message']]
         top_days.columns = ['Date', 'Messages']
+        # Add proper indexing (1, 2, 3, etc.)
+        top_days = top_days.reset_index(drop=True)
+        top_days.index = top_days.index + 1
         st.dataframe(top_days, use_container_width=True)
         
         
