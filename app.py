@@ -189,28 +189,33 @@ if uploaded_file is not None:
         
         
         st.title("Monthly-Timeline")
-        
-        monthly_msges=helper.monthly_timeline(df,user)
-        fig, ax = plt.subplots()
-
-
-
-        ax.plot(monthly_msges["month-year"], monthly_msges["Message"])
-        plt.xticks(rotation= 'vertical')
-        plt.figure(figsize=(100,30))
+        monthly_msges = helper.monthly_timeline(df, user)
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(monthly_msges["month-year"], monthly_msges["Message"], marker='o', color='#1f77b4', linewidth=2)
+        ax.set_xlabel("Month-Year", fontsize=12)
+        ax.set_ylabel("Messages", fontsize=12)
+        ax.set_title("Monthly Message Timeline", fontsize=14, fontweight='bold')
+        ax.grid(True, linestyle='--', alpha=0.5)
+        plt.xticks(rotation=45, ha='right')
+        # Highlight peak month
+        peak_idx = monthly_msges["Message"].idxmax()
+        ax.plot(monthly_msges["month-year"][peak_idx], monthly_msges["Message"][peak_idx], 'ro', markersize=10, label='Peak')
+        ax.legend()
         st.pyplot(fig)
-        
-        
-        
+
         st.title("Daily-Timeline")
-        daily_msges=helper.daily_timeline(user,df)
-        fig, ax = plt.subplots()
-
-
-
-        ax.plot(daily_msges["onlydate"], daily_msges["Message"])
-        plt.xticks(rotation= 'vertical')
-        plt.figure(figsize=(100,30))
+        daily_msges = helper.daily_timeline(user, df)
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.bar(daily_msges["onlydate"], daily_msges["Message"], color='#ff7f0e', width=1)
+        ax.set_xlabel("Date", fontsize=12)
+        ax.set_ylabel("Messages", fontsize=12)
+        ax.set_title("Daily Message Timeline", fontsize=14, fontweight='bold')
+        ax.grid(True, linestyle='--', alpha=0.5)
+        plt.xticks(rotation=45, ha='right', fontsize=8)
+        # Highlight peak day
+        peak_idx = daily_msges["Message"].idxmax()
+        ax.bar(daily_msges["onlydate"][peak_idx], daily_msges["Message"][peak_idx], color='red', width=1, label='Peak')
+        ax.legend()
         st.pyplot(fig)
         
         
