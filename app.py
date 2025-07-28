@@ -162,19 +162,76 @@ if uploaded_file is not None:
             st.title(no_links)           
        
         if user=="Overall":
-            st.title("Most busy Users")
+            st.title("👥 Most Active Users")
             
-            col1, col2= st.columns(2)
-            df1,df2=helper.most_busy_users(df)
+            col1, col2 = st.columns(2)
+            df1, df2 = helper.most_busy_users(df)
             
             with col1:
-                               
-                                
-                 st.bar_chart(df1)
-              
+                st.subheader("Message Distribution")
+                st.caption("Number of messages sent by top 5 users")
+
+                st.bar_chart(
+                    df1,
+                    use_container_width=True,
+                    height=400
+                )
+               
+            
             with col2:
-                st.dataframe(df2)
-                
+                st.subheader("Participation % of all members", divider=False)
+                st.dataframe(
+                    df2,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "User": "Username",
+                        "percent(%)": st.column_config.NumberColumn(
+                            "Participation %",
+                            help="Percentage of total messages",
+                            format="%.2f%%"
+                        )
+                    }
+                )
+        else:
+            st.title(f"👤 {user}'s Participation")
+            
+            # Calculate this specific user's participation data
+            user_messages = df[df["User"] == user].shape[0]
+            total_messages = df[df["User"] != "group notification"].shape[0]
+            user_percentage = round((user_messages / total_messages) * 100, 2) if total_messages > 0 else 0
+            
+            # Create a DataFrame for this user's participation
+            user_participation_data = pd.DataFrame({
+                'User': [user],
+                'percent(%)': [user_percentage]
+            })
+            
+            st.subheader("Participation in Group Chat", divider=False)
+            st.dataframe(
+                user_participation_data,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "User": "Username",
+                    "percent(%)": st.column_config.NumberColumn(
+                        "Participation %",
+                        help="Percentage of total messages",
+                        format="%.2f%%"
+                    )
+                }
+            )
+            
+            # Add some additional insights
+            st.subheader("📊 User Statistics")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Total Messages", user_messages)
+            with col2:
+                st.metric("Total Group Messages", total_messages)
+            with col3:
+                st.metric("Participation %", f"{user_percentage}%")
         st.title("Word Cloud")
         df_wc = helper.word_cloud(user, df)
         
@@ -234,7 +291,6 @@ if uploaded_file is not None:
         
         with col2:
             st.markdown("""
-            **🔍 Interactive**: Hover for better visibility
             **📊 Frequency**: Word size indicates usage frequency
             **🎯 Focus**: Highlights most important words
             **📈 Insights**: Visual representation of chat patterns
@@ -297,18 +353,18 @@ if uploaded_file is not None:
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Most Used Word", top_20_words[0].iloc[0])
+            st.metric("Most Used Word", top_20_words.iloc[0, 0] if len(top_20_words) > 0 else "N/A")
         with col2:
-            st.metric("Most Used Count", top_20_words[1].iloc[0])
+            st.metric("Most Used Count", top_20_words.iloc[0, 1] if len(top_20_words) > 0 else 0)
         with col3:
-            st.metric("Average Word Count", f"{top_20_words[1].mean():.1f}")
+            st.metric("Average Word Count", f"{top_20_words[1].mean():.1f}" if len(top_20_words) > 0 else "0.0")
         with col4:
-            st.metric("Total Unique Words", len(top_20_words[0]))
+            st.metric("Total Unique Words", len(top_20_words))
         
         # Show top 20 words in a clean table
         st.subheader("📋 Complete Top 20 Words List")
         words_df = pd.DataFrame({
-            'Rank': range(1, 21),
+            'Rank': range(1, len(top_20_words) + 1),
             'Word': top_20_words[0],
             'Count': top_20_words[1]
         })

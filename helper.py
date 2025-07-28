@@ -53,7 +53,10 @@ def most_busy_users(df):
     df1=df["User"].value_counts().head()
     
     newdf=round((df["User"].value_counts()/df.shape[0])*100,2).reset_index()
-    newdf=newdf.rename(columns={"index":"User","User":"percent(%)"})
+    # Fix the column renaming - reset_index() creates 'index' column, and we need to rename it to 'User'
+    # The value_counts() creates a Series with User as index, so reset_index() creates 'index' column
+    newdf=newdf.rename(columns={"index":"User"})
+    newdf=newdf.rename(columns={"User":"percent(%)"})
     
     return df1,newdf   #### df1 contains data of top 5 users and their  messages_count,  newdf consists of users and their percentage of messages        
     
