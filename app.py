@@ -143,7 +143,7 @@ if uploaded_file is not None:
         with col1:
             
             st.header("Total messages")
-            st.title(num_messages)
+            st.write(f"<div style='font-size: 2.5rem; font-weight: bold; margin-top: -30px;'>{num_messages}</div>", unsafe_allow_html=True)
            
             
         with col2:
