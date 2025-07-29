@@ -605,3 +605,209 @@ if uploaded_file is not None:
             st.info("Try uploading a chat file that contains emoji messages.")
         
         
+        # # Sentiment Analysis Section
+        # st.title("Sentiment Analysis")
+        # sentiment_df, emotion_df, daily_sentiment, sentiment_stats = helper.sentiment_analysis(df, user)
+        
+        # if sentiment_stats["total_messages"] > 0:
+        #     # Sentiment Statistics
+        #     st.header("📊 Sentiment Statistics")
+        #     col1, col2, col3, col4, col5 = st.columns(5)
+            
+        #     with col1:
+        #         st.metric("Total Messages", sentiment_stats["total_messages"])
+        #     with col2:
+        #         st.metric(
+        #             "Positive Messages", 
+        #             sentiment_stats['positive_messages'],
+        #             delta=f"{sentiment_stats['positive_percentage']:.1f}%"
+        #         )
+        #     with col3:
+        #         st.metric(
+        #             "Negative Messages",
+        #             sentiment_stats['negative_messages'], 
+        #             delta=f"{sentiment_stats['negative_percentage']:.1f}%"
+        #         )
+        #     with col4:
+        #         st.metric(
+        #             "Neutral Messages",
+        #             sentiment_stats['neutral_messages'],
+        #             delta=f"{sentiment_stats['neutral_percentage']:.1f}%"
+        #         )
+        #     with col5:
+        #         st.metric(
+        #             "Average Sentiment",
+        #             f"{sentiment_stats['average_sentiment']:.3f}"
+        #         )
+        #     # Sentiment Distribution Chart
+        #     st.header("📈 Sentiment Distribution")
+        #     sentiment_dist_data = {
+        #         'Sentiment': ['Positive', 'Negative', 'Neutral'],
+        #         'Count': [sentiment_stats['positive_messages'], sentiment_stats['negative_messages'], sentiment_stats['neutral_messages']],
+        #         'Percentage': [sentiment_stats['positive_percentage'], sentiment_stats['negative_percentage'], sentiment_stats['neutral_percentage']]
+        #     }
+        #     sentiment_dist_df = pd.DataFrame(sentiment_dist_data)
+            
+        #     fig = go.Figure()
+        #     fig.add_trace(go.Bar(
+        #         x=sentiment_dist_df['Sentiment'],
+        #         y=sentiment_dist_df['Count'],
+        #         marker_color=['#2E8B57', '#DC143C', '#808080'],
+        #         text=sentiment_dist_df['Percentage'].apply(lambda x: f'{x:.1f}%'),
+        #         textposition='auto',
+        #         hovertemplate='<b>%{x}</b><br>Count: %{y}<br>Percentage: %{text}<extra></extra>'
+        #     ))
+            
+        #     fig.update_layout(
+        #         title="Message Sentiment Distribution",
+        #         xaxis_title="Sentiment",
+        #         yaxis_title="Number of Messages",
+        #         height=400,
+        #         showlegend=False
+        #     )
+        #     st.plotly_chart(fig, use_container_width=True)
+            
+        #     # Emotion Analysis
+        #     if not emotion_df.empty:
+        #         st.header("😊 Emotion Analysis")
+                
+        #         # Emotion Distribution Chart
+        #         fig = go.Figure()
+        #         fig.add_trace(go.Pie(
+        #             labels=emotion_df['Emotion'],
+        #             values=emotion_df['Count'],
+        #             hole=0.4,
+        #             textinfo='label+percent',
+        #             textposition='outside',
+        #             hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+        #         ))
+                
+        #         fig.update_layout(
+        #             title="Emotion Distribution",
+        #             height=600,
+        #             showlegend=True,
+        #             legend=dict(
+        #                 orientation="h",
+        #                 yanchor="bottom",
+        #                 y=1.02,
+        #                 xanchor="right",
+        #                 x=1
+        #             )
+        #         )
+        #         st.plotly_chart(fig, use_container_width=True)
+                
+        #         # Top emotions in a table
+        #         st.subheader("🏆 Top Emotions")
+        #         st.dataframe(emotion_df.head(10), use_container_width=True)
+            
+        #     # Sentiment Trends
+        #     if not daily_sentiment.empty:
+        #         st.header("📈 Sentiment Trends Over Time")
+                
+        #         # Daily sentiment trend
+        #         fig = go.Figure()
+        #         fig.add_trace(go.Scatter(
+        #             x=daily_sentiment['Date'],
+        #             y=daily_sentiment['Average_Sentiment'],
+        #             mode='lines+markers',
+        #             name='Daily Sentiment',
+        #             line=dict(color='#1f77b4', width=3),
+        #             marker=dict(size=8),
+        #             hovertemplate='<b>%{x}</b><br>Average Sentiment: %{y:.3f}<extra></extra>'
+        #         ))
+                
+        #         # Add zero line for reference
+        #         fig.add_hline(y=0, line_dash="dash", line_color="red", annotation_text="Neutral")
+                
+        #         fig.update_layout(
+        #             title="Daily Sentiment Trend",
+        #             xaxis_title="Date",
+        #             yaxis_title="Average Sentiment Score",
+        #             height=400,
+        #             yaxis=dict(range=[-1, 1])
+        #         )
+        #         st.plotly_chart(fig, use_container_width=True)
+            
+        #     # User Sentiment Profiles (only for Overall analysis)
+        #     if user == "Overall":
+        #         st.header("👥 User Sentiment Profiles")
+        #         user_profiles = helper.user_sentiment_profiles(df)
+                
+        #         if not user_profiles.empty:
+        #             # User sentiment comparison chart
+        #             fig = go.Figure()
+        #             fig.add_trace(go.Bar(
+        #                 x=user_profiles['User'],
+        #                 y=user_profiles['Average_Sentiment'],
+        #                 marker_color=user_profiles['Average_Sentiment'].apply(
+        #                     lambda x: '#2E8B57' if x > 0 else '#DC143C' if x < 0 else '#808080'
+        #                 ),
+        #                 text=user_profiles['Average_Sentiment'].apply(lambda x: f'{x:.3f}'),
+        #                 textposition='auto',
+        #                 hovertemplate='<b>%{x}</b><br>Average Sentiment: %{y:.3f}<extra></extra>'
+        #             ))
+                    
+        #             fig.update_layout(
+        #                 title="User Sentiment Comparison",
+        #                 xaxis_title="User",
+        #                 yaxis_title="Average Sentiment Score",
+        #                 height=400,
+        #                 yaxis=dict(range=[-1, 1])
+        #             )
+        #             st.plotly_chart(fig, use_container_width=True)
+                    
+        #             # User profiles table
+        #             st.subheader("📋 Detailed User Sentiment Profiles")
+        #             st.dataframe(user_profiles, use_container_width=True)
+            
+        #     # Sentiment Insights
+        #     st.header("💡 Sentiment Insights")
+        #     col1, col2 = st.columns(2)
+            
+        #     with col1:
+        #         if sentiment_stats['average_sentiment'] > 0.1:
+        #             st.success("😊 **Overall Positive Mood**")
+        #             st.write("The chat shows a generally positive sentiment")
+        #         elif sentiment_stats['average_sentiment'] < -0.1:
+        #             st.error("😔 **Overall Negative Mood**")
+        #             st.write("The chat shows a generally negative sentiment")
+        #         else:
+        #             st.info("😐 **Neutral Mood**")
+        #             st.write("The chat shows a generally neutral sentiment")
+            
+        #     with col2:
+        #         if sentiment_stats['sentiment_variance'] > 0.1:
+        #             st.warning("📊 **High Sentiment Variability**")
+        #             st.write("Sentiment varies significantly over time")
+        #         else:
+        #             st.success("📊 **Stable Sentiment**")
+        #             st.write("Sentiment remains relatively consistent")
+            
+        #     # Most positive and negative messages
+        #     if not sentiment_df.empty:
+        #         st.subheader("🏆 Top Sentiment Messages")
+        #         col1, col2 = st.columns(2)
+                
+        #         with col1:
+        #             st.subheader("😊 Most Positive Messages")
+        #             positive_messages = sentiment_df[sentiment_df['sentiment_score'] > 0.5].head(5)
+        #             if not positive_messages.empty:
+        #                 for idx, row in positive_messages.iterrows():
+        #                     st.write(f"**Score: {row['sentiment_score']:.3f}**")
+        #                     st.write(f"*{row['message'][:100]}{'...' if len(row['message']) > 100 else ''}*")
+        #                     st.divider()
+                
+        #         with col2:
+        #             st.subheader("😔 Most Negative Messages")
+        #             negative_messages = sentiment_df[sentiment_df['sentiment_score'] < -0.5].head(5)
+        #             if not negative_messages.empty:
+        #                 for idx, row in negative_messages.iterrows():
+        #                     st.write(f"**Score: {row['sentiment_score']:.3f}**")
+        #                     st.write(f"*{row['message'][:100]}{'...' if len(row['message']) > 100 else ''}*")
+        #                     st.divider()
+        
+        # else:
+        #     st.warning("No text messages found for sentiment analysis")
+        #     st.info("Try uploading a chat file that contains text messages.")
+        
+        
