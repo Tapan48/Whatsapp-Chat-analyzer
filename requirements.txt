@@ -2,11 +2,14 @@ boto3==1.35.36
 botocore==1.35.36
 emoji==2.10.1
 matplotlib==3.9.2
+nltk==3.9.1
+numpy==1.24.3
 pandas==2.2.3
 plotly==5.18.0
 python-dotenv==1.0.1
 seaborn==0.13.2
 setuptools==75.1.0
 streamlit==1.39.0
+textblob==0.19.0
 urlextract==1.9.0
 wordcloud==1.9.3
