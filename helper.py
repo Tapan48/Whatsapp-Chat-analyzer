@@ -451,50 +451,50 @@ def user_sentiment_profiles(df):
     
     return pd.DataFrame(user_profiles)
 
-# def sentiment_trends(df, user):
-#     """Analyze sentiment trends over time"""
-#     
-#     # Filter for specific user or overall
-#     if user != "Overall":
-#         df = df[df["User"] == user]
-#     
-#     # Filter out media messages
-#     df = df[df["Message"] != "<Media omitted>"]
-#     
-#     # Add sentiment scores
-#     sentiment_scores = []
-#     for message in df["Message"]:
-#         if message.strip():
-#             blob = TextBlob(message)
-#             sentiment_scores.append(blob.sentiment.polarity)
-#         else:
-#             sentiment_scores.append(0)
-#     
-#     df['sentiment_score'] = sentiment_scores
-#     
-#     # Group by different time periods
-#     df['date'] = df['datetime'].dt.date
-#     df['week'] = df['datetime'].dt.isocalendar().week
-#     df['month'] = df['datetime'].dt.month
-#     df['hour'] = df['datetime'].dt.hour
-#     
-#     # Daily sentiment trends
-#     daily_sentiment = df.groupby('date')['sentiment_score'].agg(['mean', 'count']).reset_index()
-#     daily_sentiment.columns = ['Date', 'Average_Sentiment', 'Message_Count']
-#     
-#     # Weekly sentiment trends
-#     weekly_sentiment = df.groupby('week')['sentiment_score'].agg(['mean', 'count']).reset_index()
-#     weekly_sentiment.columns = ['Week', 'Average_Sentiment', 'Message_Count']
-#     
-#     # Monthly sentiment trends
-#     monthly_sentiment = df.groupby('month')['sentiment_score'].agg(['mean', 'count']).reset_index()
-#     monthly_sentiment.columns = ['Month', 'Average_Sentiment', 'Message_Count']
-#     
-#     # Hourly sentiment patterns
-#     hourly_sentiment = df.groupby('hour')['sentiment_score'].agg(['mean', 'count']).reset_index()
-#     hourly_sentiment.columns = ['Hour', 'Average_Sentiment', 'Message_Count']
-#     
-#     return daily_sentiment, weekly_sentiment, monthly_sentiment, hourly_sentiment
+def sentiment_trends(df, user):
+    """Analyze sentiment trends over time"""
+    
+    # Filter for specific user or overall
+    if user != "Overall":
+        df = df[df["User"] == user]
+    
+    # Filter out media messages
+    df = df[df["Message"] != "<Media omitted>"]
+    
+    # Add sentiment scores
+    sentiment_scores = []
+    for message in df["Message"]:
+        if message.strip():
+            blob = TextBlob(message)
+            sentiment_scores.append(blob.sentiment.polarity)
+        else:
+            sentiment_scores.append(0)
+    
+    df['sentiment_score'] = sentiment_scores
+    
+    # Group by different time periods
+    df['date'] = df['datetime'].dt.date
+    df['week'] = df['datetime'].dt.isocalendar().week
+    df['month'] = df['datetime'].dt.month
+    df['hour'] = df['datetime'].dt.hour
+    
+    # Daily sentiment trends
+    daily_sentiment = df.groupby('date')['sentiment_score'].agg(['mean', 'count']).reset_index()
+    daily_sentiment.columns = ['Date', 'Average_Sentiment', 'Message_Count']
+    
+    # Weekly sentiment trends
+    weekly_sentiment = df.groupby('week')['sentiment_score'].agg(['mean', 'count']).reset_index()
+    weekly_sentiment.columns = ['Week', 'Average_Sentiment', 'Message_Count']
+    
+    # Monthly sentiment trends
+    monthly_sentiment = df.groupby('month')['sentiment_score'].agg(['mean', 'count']).reset_index()
+    monthly_sentiment.columns = ['Month', 'Average_Sentiment', 'Message_Count']
+    
+    # Hourly sentiment patterns
+    hourly_sentiment = df.groupby('hour')['sentiment_score'].agg(['mean', 'count']).reset_index()
+    hourly_sentiment.columns = ['Hour', 'Average_Sentiment', 'Message_Count']
+    
+    return daily_sentiment, weekly_sentiment, monthly_sentiment, hourly_sentiment
      
             
             
