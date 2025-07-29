@@ -412,44 +412,44 @@ def classify_emotion(message, sentiment_score):
     else:
         return "Neutral"
 
-# def user_sentiment_profiles(df):
-#     """Analyze sentiment profiles for all users"""
+def user_sentiment_profiles(df):
+    """Analyze sentiment profiles for all users"""
     
-#     users = df["User"].unique()
-#     user_profiles = []
+    users = df["User"].unique()
+    user_profiles = []
     
-#     for user in users:
-#         if user != "group notification":
-#             user_df = df[df["User"] == user]
-#             user_messages = user_df[user_df["Message"] != "<Media omitted>"]
+    for user in users:
+        if user != "group notification":
+            user_df = df[df["User"] == user]
+            user_messages = user_df[user_df["Message"] != "<Media omitted>"]
             
-#             if len(user_messages) > 0:
-#                 # Calculate sentiment for this user
-#                 sentiment_scores = []
-#                 for message in user_messages["Message"]:
-#                     if message.strip():
-#                         blob = TextBlob(message)
-#                         sentiment_scores.append(blob.sentiment.polarity)
+            if len(user_messages) > 0:
+                # Calculate sentiment for this user
+                sentiment_scores = []
+                for message in user_messages["Message"]:
+                    if message.strip():
+                        blob = TextBlob(message)
+                        sentiment_scores.append(blob.sentiment.polarity)
                 
-#                 if sentiment_scores:
-#                     avg_sentiment = np.mean(sentiment_scores)
-#                     positive_count = sum(1 for score in sentiment_scores if score > 0.1)
-#                     negative_count = sum(1 for score in sentiment_scores if score < -0.1)
-#                     neutral_count = len(sentiment_scores) - positive_count - negative_count
+                if sentiment_scores:
+                    avg_sentiment = np.mean(sentiment_scores)
+                    positive_count = sum(1 for score in sentiment_scores if score > 0.1)
+                    negative_count = sum(1 for score in sentiment_scores if score < -0.1)
+                    neutral_count = len(sentiment_scores) - positive_count - negative_count
                     
-#                     user_profiles.append({
-#                         'User': user,
-#                         'Total_Messages': len(sentiment_scores),
-#                         'Average_Sentiment': avg_sentiment,
-#                         'Positive_Messages': positive_count,
-#                         'Negative_Messages': negative_count,
-#                         'Neutral_Messages': neutral_count,
-#                         'Positive_Percentage': (positive_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0,
-#                         'Negative_Percentage': (negative_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0,
-#                         'Neutral_Percentage': (neutral_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0
-#                     })
+                    user_profiles.append({
+                        'User': user,
+                        'Total_Messages': len(sentiment_scores),
+                        'Average_Sentiment': avg_sentiment,
+                        'Positive_Messages': positive_count,
+                        'Negative_Messages': negative_count,
+                        'Neutral_Messages': neutral_count,
+                        'Positive_Percentage': (positive_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0,
+                        'Negative_Percentage': (negative_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0,
+                        'Neutral_Percentage': (neutral_count / len(sentiment_scores) * 100) if len(sentiment_scores) > 0 else 0
+                    })
     
-#     return pd.DataFrame(user_profiles)
+    return pd.DataFrame(user_profiles)
 
 # def sentiment_trends(df, user):
 #     """Analyze sentiment trends over time"""
