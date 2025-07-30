@@ -16,12 +16,6 @@ A comprehensive web application for analyzing WhatsApp chat data using Streamlit
 - **Sentiment Analysis**: Emotion classification and sentiment trends
 - **Interactive Charts**: Plotly-based interactive visualizations
 
-### 🔍 Advanced Features
-- **Multi-language Support**: Handles Hinglish (Hindi-English) text
-- **Media Detection**: Identifies and counts media files shared
-- **Link Extraction**: Counts and analyzes URLs shared in chat
-- **Time-based Insights**: Activity patterns by hour, day, and month
-
 ## 🛠️ Technology Stack
 
 - **Frontend**: Streamlit
