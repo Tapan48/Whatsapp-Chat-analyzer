@@ -240,25 +240,32 @@ def emoji_analysis(df, user):
     # Filter for specific user or overall
     if user != "Overall":
         df = df[df["User"] == user]
+    else:
+        # For overall, exclude group notifications like fetch_stats does
+        df = df[df["User"] != "group notification"]
+    
+    # Store original df for total message count (including media)
+    original_df = df.copy()
+    total_messages = original_df.shape[0]
+    
+    # Filter out media messages for emoji analysis
+    df = df[df["Message"] != "<Media omitted>"]
     
     emoji_counts = {}
-    total_messages = 0
     messages_with_emojis = 0
     
     # Go through each message
     for message in df["Message"]:
-        if message != "<Media omitted>":
-            total_messages += 1
-            # Find all emojis in the message
-            emojis = emoji.emoji_list(message)
+        # Find all emojis in the message
+        emojis = emoji.emoji_list(message)
+        
+        if emojis:  # If message contains emojis
+            messages_with_emojis += 1
             
-            if emojis:  # If message contains emojis
-                messages_with_emojis += 1
-                
-            # Count each emoji
-            for e in emojis:
-                emoji_char = e["emoji"]
-                emoji_counts[emoji_char] = emoji_counts.get(emoji_char, 0) + 1
+        # Count each emoji
+        for e in emojis:
+            emoji_char = e["emoji"]
+            emoji_counts[emoji_char] = emoji_counts.get(emoji_char, 0) + 1
     
     # Convert to DataFrame for easy display
     if emoji_counts:
@@ -288,21 +295,25 @@ def sentiment_analysis(df, user):
     # Filter for specific user or overall
     if user != "Overall":
         df = df[df["User"] == user]
+    else:
+        # For overall, exclude group notifications like fetch_stats does
+        df = df[df["User"] != "group notification"]
     
-    # Filter out media messages
+    # Store original df for total message count (including media)
+    original_df = df.copy()
+    total_messages = original_df.shape[0]
+    
+    # Filter out media messages for sentiment analysis
     df = df[df["Message"] != "<Media omitted>"]
     
     sentiment_scores = []
     emotions = []
-    total_messages = 0
     positive_messages = 0
     negative_messages = 0
     neutral_messages = 0
     
     for message in df["Message"]:
         if message.strip():
-            total_messages += 1
-            
             # Get sentiment score using TextBlob
             blob = TextBlob(message)
             sentiment_score = blob.sentiment.polarity
@@ -362,7 +373,7 @@ def sentiment_analysis(df, user):
         
     else:
         sentiment_stats = {
-            "total_messages": 0,
+            "total_messages": total_messages,
             "positive_messages": 0,
             "negative_messages": 0,
             "neutral_messages": 0,
